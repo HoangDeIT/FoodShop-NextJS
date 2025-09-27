@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import NextAuthWarper from "@/lib/next.auth.wrapper";
+import '@ant-design/v5-patch-for-react-19';
+import ClientWrapper from "@/lib/next.skip.error.antd";
+import { NotificationProvider } from "@/lib/notificationProvider";
+import { App, ConfigProvider, theme } from "antd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +31,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <AntdRegistry>
+          <NextAuthWarper>
+            <ClientWrapper>
+              <NotificationProvider>
+
+                <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+                  <App>
+                    {children}
+                  </App >
+                </ConfigProvider>
+
+              </NotificationProvider>
+            </ClientWrapper>
+          </NextAuthWarper>
+        </AntdRegistry>
       </body>
     </html>
   );
