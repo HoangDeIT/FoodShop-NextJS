@@ -33,17 +33,17 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AntdRegistry>
           <NextAuthWarper>
-            <ClientWrapper>
-              <NotificationProvider>
+            {/* <ClientWrapper> */}
+            <NotificationProvider>
 
-                <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
-                  <App>
-                    {children}
-                  </App >
-                </ConfigProvider>
+              <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+                <App>
+                  {children}
+                </App >
+              </ConfigProvider>
 
-              </NotificationProvider>
-            </ClientWrapper>
+            </NotificationProvider>
+            {/* </ClientWrapper> */}
           </NextAuthWarper>
         </AntdRegistry>
       </body>
