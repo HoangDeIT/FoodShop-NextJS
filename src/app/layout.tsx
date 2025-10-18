@@ -7,7 +7,7 @@ import '@ant-design/v5-patch-for-react-19';
 import ClientWrapper from "@/lib/next.skip.error.antd";
 import { NotificationProvider } from "@/lib/notificationProvider";
 import { App, ConfigProvider, theme } from "antd";
-
+import "leaflet/dist/leaflet.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

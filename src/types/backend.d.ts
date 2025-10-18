@@ -43,6 +43,13 @@ declare global {
         OTP?: string;
         OTPExpired?: string;
         status: "active" | "inactive";
+        location?: ILocation,
+        description?: string
+    }
+    interface ILocation {
+        latitude: number;
+        longitude: number;
+        address?: string;
     }
     interface ICreateUser {
         name: string,
@@ -56,4 +63,115 @@ declare global {
         _id: string
 
     }
+
+    interface ICategoryR {
+        _id: string;
+        name: string;
+        description?: string;
+        image?: string;
+        icon?: string;
+        createdBy: string | null;
+        isDeleted: boolean;
+        deletedAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+    }
+    interface ICreateCategory {
+        name: string;
+        description?: string;
+        image?: string;
+        icon?: string;
+    }
+
+    interface IUpdateCategory extends ICreateCategory {
+
+    }
+    interface IProductR {
+        _id: string;
+
+        // 🧋 Thông tin cơ bản
+        name: string;
+        description?: string;
+        image?: string;
+
+        // 💰 Giá cơ bản
+        basePrice: number;
+
+        // 📦 Phân loại
+        category: string | ICategoryR; // nếu populate thì là object
+        seller: string | IUserR;        // nếu populate thì là object
+
+        // 🧩 Biến thể sản phẩm
+        sizes?: IProductSize[];
+        toppings?: IProductTopping[];
+
+        // ⚙️ Trạng thái
+        inStock?: boolean;
+        sold?: number;
+        isDeleted?: boolean;
+        deletedAt?: string | null;
+
+        // 📅 Metadata
+        createdBy?: {
+            _id: string;
+            email: string;
+        } | null;
+        createdAt?: string;
+        updatedAt?: string;
+        __v?: number;
+    }
+
+    // ✅ Sub-types
+    interface IProductSize {
+        _id?: string;
+        name: string;
+        price: number;
+        isDefault?: boolean;
+        isDeleted?: boolean;
+        deletedAt?: string | null;
+    }
+
+    interface IProductTopping {
+        _id?: string;
+        name: string;
+        price: number;
+        isDeleted?: boolean;
+        deletedAt?: string | null;
+    }
+    interface ICreateProduct {
+        // 🧋 Thông tin cơ bản
+        name: string;
+        description?: string;
+        image?: string;
+
+        // 💰 Giá cơ bản
+        basePrice: number;
+
+        // 📦 Phân loại
+        category: string; // _id của Category
+
+        // 🧩 Tuỳ chọn sản phẩm
+        sizes?: IProductSizeCreate[];
+        toppings?: IProductToppingCreate[];
+
+        // ⚙️ Trạng thái & số lượng
+        inStock?: boolean;
+        sold?: number;
+
+        // ✅ Admin bật/tắt món
+        isAvailable?: boolean;
+    }
+
+    // Sub-types cho nested field
+    interface IProductSizeCreate {
+        name: string;
+        price: number;
+        isDefault?: boolean;
+    }
+
+    interface IProductToppingCreate {
+        name: string;
+        price: number;
+    }
+
 }

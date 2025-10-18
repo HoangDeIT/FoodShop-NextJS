@@ -120,13 +120,16 @@ const ModalCreateUser = ({ isModalOpen, setIsModalOpen, getData }: { isModalOpen
                     />
                 </Form.Item>
                 <Form.Item label="Avatar">
-                    <Upload
-                        beforeUpload={beforeUpload}
-                        showUploadList={false}
-                        accept="image/*"
-                    >
-                        <Button icon={<UploadOutlined />}>Upload Avatar</Button>
-                    </Upload>
+                    {!avatarUrl && (
+                        <Upload
+                            beforeUpload={beforeUpload}
+                            showUploadList={false}
+                            accept="image/*"
+                        >
+                            <Button icon={<UploadOutlined />}>Upload Avatar</Button>
+                        </Upload>
+                    )}
+
                     {avatarUrl && (
                         <div
                             style={{

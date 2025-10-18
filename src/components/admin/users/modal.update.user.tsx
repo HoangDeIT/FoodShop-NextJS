@@ -79,11 +79,15 @@ const ModalUpdateUser = ({ isModalOpen, setIsModalOpen, userId, getData }: Modal
                 if (res?.data?.fileName) {
                     avatar = res.data.fileName;
                 }
-            }
-            if (!avatarUrl && !file) {
-                avatar = ""; // nếu xoá ảnh
+            } else if (avatarUrl && avatarUrl.startsWith("http")) {
+                // Ảnh cũ từ backend → chỉ lấy tên file
+                avatar = avatarUrl.split("/").pop() || "";
             }
 
+            // ❌ Nếu xoá ảnh
+            if (!avatarUrl && !file) {
+                avatar = "";
+            }
             // xử lý password theo yêu cầu
             let payload: any = {
                 ...values,
@@ -183,13 +187,16 @@ const ModalUpdateUser = ({ isModalOpen, setIsModalOpen, userId, getData }: Modal
                 </Form.Item>
 
                 <Form.Item label="Avatar">
-                    <Upload
-                        beforeUpload={beforeUpload}
-                        showUploadList={false}
-                        accept="image/*"
-                    >
-                        <Button icon={<UploadOutlined />}>Upload Avatar</Button>
-                    </Upload>
+                    {!avatarUrl && (
+                        <Upload
+                            beforeUpload={beforeUpload}
+                            showUploadList={false}
+                            accept="image/*"
+                        >
+                            <Button icon={<UploadOutlined />}>Upload Avatar</Button>
+                        </Upload>
+                    )}
+
                     {avatarUrl && (
                         <div
                             style={{
@@ -199,7 +206,13 @@ const ModalUpdateUser = ({ isModalOpen, setIsModalOpen, userId, getData }: Modal
                             }}
                         >
                             <img
-                                src={avatarUrl}
+                                src={
+                                    avatarUrl.startsWith("data:") // 🟢 base64 local preview
+                                        ? avatarUrl
+                                        : avatarUrl.startsWith("http") // 🟢 URL đầy đủ từ backend
+                                            ? avatarUrl
+                                            : `${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${avatarUrl}` // 🟢 tên file
+                                }
                                 alt="preview"
                                 style={{ width: 80, height: 80, borderRadius: "50%" }}
                             />
@@ -222,6 +235,7 @@ const ModalUpdateUser = ({ isModalOpen, setIsModalOpen, userId, getData }: Modal
                         </div>
                     )}
                 </Form.Item>
+
             </Form>
         </Modal>
     );
