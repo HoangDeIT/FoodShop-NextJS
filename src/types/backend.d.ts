@@ -174,4 +174,39 @@ declare global {
         price: number;
     }
 
+    interface IOrderItem {
+        productName: string;
+        quantity: number;
+        totalPrice: number;
+    }
+
+    interface IOrder {
+        _id: string;
+        customer?: { name: string; email: string };
+        shop?: { name: string };
+        items: IOrderItem[];
+        totalPrice: number;
+        orderStatus:
+        | "pending"
+        | "confirmed"
+        | "preparing"
+        | "delivering"
+        | "completed"
+        | "cancelled";
+        receiverName: string;
+        receiverPhone: string;
+        note: string;
+        orderDate: string;
+    }
+
+    // 🔹 Các trạng thái hợp lệ
+    const ORDER_STATUSES = [
+        "pending",
+        "confirmed",
+        "preparing",
+        "delivering",
+        "completed",
+        "cancelled",
+    ] as const;
+
 }

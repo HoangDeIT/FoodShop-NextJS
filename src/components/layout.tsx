@@ -12,7 +12,7 @@ const { Header, Content } = Layout;
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [collapsed, setCollapsed] = useState(false);
     const { message } = useApp();
-    const handleMenuClick = ({ key }: { key: string }) => {
+    const handleMenuClick = async ({ key }: { key: string }) => {
         switch (key) {
             case "profile":
                 message.info("Đi tới trang hồ sơ...");
@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 break;
             case "logout":
                 message.success("Đăng xuất thành công");
-                signOut(); // với NextAuth
+                await signOut({ callbackUrl: "/login", redirect: true });// với NextAuth
                 break;
             default:
                 break;

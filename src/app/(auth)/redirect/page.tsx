@@ -13,9 +13,14 @@ const RedirectPage = async () => {
         } else if (session.role === "seller") {
             redirect("/seller");
         } else {
-            signOut({ callbackUrl: "/login" });
+            await signOut({ callbackUrl: "/login", redirect: true });
             redirect("/login")
         }
+    } else {
+        redirect("/login");
     }
+    return (
+        <div>Redirecting...</div>
+    )
 }
 export default RedirectPage
