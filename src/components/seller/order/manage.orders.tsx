@@ -10,12 +10,13 @@ import {
     Tag,
     Popconfirm,
     Select,
-    message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 // ⚠️ Giả API (bạn thay bằng API thật sau)
 import { getOrdersBySeller, updateOrderStatus } from "@/utils/actions/sellers/action.orders";
+import useApp from "antd/es/app/useApp";
+import { getSession, useSession } from "next-auth/react";
 
 interface IMeta {
     current: number;
@@ -76,7 +77,8 @@ export default function ManageOrders() {
     const [pageSize, setPageSize] = useState<number>(10);
     const [statusFilter, setStatusFilter] = useState<string>("all");
     const [searchName, setSearchName] = useState<string>("");
-
+    const { message } = useApp();
+    const { data } = useSession();
     // 🔹 Lấy dữ liệu đơn hàng
     const getData = async () => {
         const query: any = { current, pageSize };
@@ -89,7 +91,38 @@ export default function ManageOrders() {
             setMeta(res.data.meta);
         }
     };
+    useEffect(() => {
+        console.log('data', data)
+        if (!data?.access_token && !data) return;
+        const es = new EventSource(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/notifications/seller/stream?token=${data?.access_token}`
+        );
 
+        // Khi server gửi event
+        es.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log("📩 SSE event:", data);
+                console.log('data.type', data.data)
+                console.log(data.data.type === "NEW_ORDER")
+                if (data.data.type === "NEW_ORDER") {
+                    message.info("🧾 Bạn có đơn hàng mới!");
+
+                    // Tuỳ chọn: tự refresh bảng đơn hàng
+                    getData();
+                }
+            } catch (err) {
+                console.error("❌ Lỗi khi parse SSE:", err);
+            }
+        };
+
+        es.onerror = (err) => {
+            console.error("❌ SSE error:", err);
+            es.close();
+        };
+
+        return () => es.close();
+    }, [data]);
     useEffect(() => {
         getData();
     }, [current, pageSize]);
@@ -252,6 +285,7 @@ export default function ManageOrders() {
                     bordered
                 />
             </Space>
+            <Button onClick={() => message.info("🧾 Bạn có đơn hàng mới!")}>ádjasd</Button>
         </Card>
     );
 }
