@@ -101,16 +101,18 @@ export const authOptions: AuthOptions = {
     ],
     callbacks: {
         async session({ session, token, user }) {
-            console.log("4")
+
 
             if (token) {
                 session.access_token = token.access_token,
                     session.email = token.email!,
                     session.name = token.name!,
-                    session.role = token.role
+                    session.role = token.role,
+                    session._id = token._id
                 // session.access_expire = token.access_expire;
             }
             return session
+
         },
         async jwt({ token, user, account, profile, trigger, session }) {
             console.log("3")
@@ -129,7 +131,10 @@ export const authOptions: AuthOptions = {
                 });
                 if (res.data) {
                     token.access_token = res.data.access_token,
-                        token.user = res.data.user
+                        token._id = res.data._id
+                    token.email = res.data.email,
+                        token.name = res.data.name,
+                        token.role = res.data.role
                     // token.access_expire = dayjs(new Date()).add(
                     //     +(process.env.TOKEN_EXPIRE_NUMBER as string), (process.env.TOKEN_EXPIRE_UNIT as any)
                     // ).unix();

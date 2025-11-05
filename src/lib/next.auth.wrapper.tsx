@@ -1,9 +1,10 @@
 'use client'
-import { SessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
+import { SessionProvider, SessionProviderProps } from "next-auth/react";
 
-export default function NextAuthWarper({ children }: { children: React.ReactNode }) {
+export default function NextAuthWarper({ children, session }: { children: React.ReactNode, session: Session | null }) {
     return (
-        <SessionProvider>
+        <SessionProvider session={session}>
             {children}
         </SessionProvider>
     );

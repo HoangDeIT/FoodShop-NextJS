@@ -18,6 +18,7 @@ type IProfile = {
     name: string;
     email: string;
     role: "admin" | "seller" | "customer";
+    _id: string
 };
 
 interface IUserLogin extends IProfile {
