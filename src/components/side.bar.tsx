@@ -8,14 +8,31 @@ import {
     TeamOutlined,
     SettingOutlined,
     BarChartOutlined,
+    ProductOutlined,
+    MessageOutlined,
+    WechatOutlined,
+    WechatWorkOutlined,
 } from "@ant-design/icons";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const { Sider } = Layout;
 const { Title, Text } = Typography;
 
 export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean, setCollapsed: (collapsed: boolean) => void }) {
     const { token } = theme.useToken();
+    const { data } = useSession();
+    const router = useRouter();
+    const handleMenuClick = ({ key }: { key: string }) => {
+        if (data?.role == 'admin') {
+            router.push(`/admin/${key}`);
+        } else {
 
+            router.push(`/seller/${key}`);
+        }
+        // chuyển hướng đến trang tương ứng
+
+    };
     return (
         <Sider
             collapsible
@@ -56,7 +73,7 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
                 >
                     A
                 </div>
-                {!collapsed && <Title level={5} style={{ margin: 0 }}>Aamir Admin</Title>}
+                {!collapsed && <Title level={5} style={{ margin: 0 }}>Admin</Title>}
             </div>
 
             {/* Menu */}
@@ -64,22 +81,23 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
                 mode="inline"
                 defaultSelectedKeys={["dashboard"]}
                 style={{ borderInline: "none" }}
-                items={[
-                    { key: "section-overview", type: "group", label: "Overview" },
-                    { key: "dashboard", icon: <BarChartOutlined />, label: "Dashboard" },
-                    { key: "inventory", icon: <AppstoreOutlined />, label: "Inventory" },
-                    { key: "orders", icon: <ShoppingCartOutlined />, label: "Orders", extra: <Badge count={8} /> },
-                    { key: "customers", icon: <TeamOutlined />, label: "Customers" },
-                    { key: "divider-1", type: "divider" as any },
-                    { key: "section-settings", type: "group", label: "Settings" },
-                    { key: "settings", icon: <SettingOutlined />, label: "Preferences" },
-                    // 👉 Thêm nhiều mục test scroll
-                    ...Array.from({ length: 15 }, (_, i) => ({
-                        key: `extra-${i}`,
-                        icon: <AppstoreOutlined />,
-                        label: `Extra ${i + 1}`,
-                    })),
-                ]}
+                onClick={handleMenuClick}
+                items={
+                    data?.role === "admin" ? [
+                        { key: "dashboard", icon: <BarChartOutlined />, label: "Dashboard" },
+                        { key: "users", icon: <TeamOutlined />, label: "Users" },
+                        { key: "categories", icon: <AppstoreOutlined />, label: "Categories" },
+                    ] :
+                        [
+                            { key: "section-overview", type: "group", label: "Overview" },
+                            { key: "dashboard", icon: <BarChartOutlined />, label: "Dashboard" },
+                            { key: "products", icon: <ProductOutlined />, label: "Products" },
+                            { key: "reviews", icon: <ShoppingCartOutlined />, label: "Reviews" },
+                            { key: "orders", icon: <WechatWorkOutlined />, label: "Orders", extra: <Badge count={8} /> },
+                            { key: "chat", icon: <WechatOutlined />, label: "Customers" },
+
+
+                        ]}
             />
 
             {/* Help box */}
@@ -100,6 +118,5 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
                 </div>
             </div>
         </Sider>
-
     );
 }

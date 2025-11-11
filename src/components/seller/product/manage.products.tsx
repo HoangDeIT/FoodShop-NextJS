@@ -16,22 +16,27 @@ import type { ColumnsType } from "antd/es/table";
 import {
     getProductsBySeller,
     deleteProduct,
-    getSellerCategories,
     toggleActiveProduct,
 } from "@/utils/actions/sellers/action.products";
 import useApp from "antd/es/app/useApp";
 import ModalCreateProduct from "./modal.create.products";
 import ModalUpdateProduct from "./modal.update.products";
 
-export default function ManageProducts() {
-    const [products, setProducts] = useState<IProductR[]>([]);
-    const [meta, setMeta] = useState<IMeta>();
+export default function ManageProductsClient({
+    initialProducts,
+    initialMeta,
+    initialCategories,
+}: {
+    initialProducts: IProductR[];
+    initialMeta: IMeta;
+    initialCategories: ICategoryR[];
+}) {
+    const [products, setProducts] = useState(initialProducts);
+    const [meta, setMeta] = useState(initialMeta);
+    const [categories, setCategories] = useState(initialCategories);
     const [current, setCurrent] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [searchName, setSearchName] = useState<string>("");
-
-    // 🆕 danh sách category để filter
-    const [categories, setCategories] = useState<ICategoryR[]>([]);
     const [categoryId, setCategoryId] = useState<string>("all");
 
     const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
@@ -40,24 +45,17 @@ export default function ManageProducts() {
 
     const { message } = useApp();
 
-    // 🔹 Lấy dữ liệu sản phẩm
+    // ✅ Fetch động khi người dùng tương tác
     const getData = async () => {
         const query: any = { current, pageSize };
         if (searchName) query.name = `/${searchName}/i`;
         if (categoryId !== "all") query.category = categoryId;
 
         const res = await getProductsBySeller(query);
-        console.log("check res: ", res);
         if (res?.data) {
             setProducts(res.data.result ?? []);
             setMeta(res.data.meta);
         }
-    };
-
-    // 🆕 Lấy danh sách categories cho seller
-    const getCategoryList = async () => {
-        const res = await getSellerCategories();
-        if (res?.data) setCategories(res.data);
     };
 
     useEffect(() => {
@@ -69,12 +67,6 @@ export default function ManageProducts() {
         setCurrent(1);
     }, [searchName, categoryId]);
 
-    // 🆕 load category list 1 lần khi mount
-    useEffect(() => {
-        getCategoryList();
-    }, []);
-
-    // 🔹 Xử lý xóa
     const handleDelete = async (id: string) => {
         try {
             const res = await deleteProduct(id);
@@ -87,13 +79,11 @@ export default function ManageProducts() {
         }
     };
 
-    // 🔹 Xử lý update
     const handleUpdate = (id: string) => {
         setIdUpdate(id);
         setIsModalOpenUpdate(true);
     };
 
-    // 🔹 Cột bảng
     const columns: ColumnsType<IProductR> = [
         {
             title: "Image",
@@ -135,7 +125,7 @@ export default function ManageProducts() {
                             const res = await toggleActiveProduct(record._id, checked);
                             if (!res.error) {
                                 message.success(`Sản phẩm đã được ${checked ? "kích hoạt" : "ẩn"}`);
-                                record.inStock = checked; // cập nhật nhanh UI
+                                record.inStock = checked;
                                 setProducts([...products]);
                             } else {
                                 message.error(res.error ?? "Cập nhật thất bại!");
@@ -182,7 +172,6 @@ export default function ManageProducts() {
             }
         >
             <Space direction="vertical" style={{ width: "100%" }} size="large">
-                {/* 🔍 Bộ lọc */}
                 <Space wrap>
                     <Input.Search
                         placeholder="Search by product name"
@@ -205,7 +194,6 @@ export default function ManageProducts() {
                     />
                 </Space>
 
-                {/* 🧾 Table */}
                 <Table<IProductR>
                     columns={columns}
                     dataSource={products}
@@ -223,7 +211,6 @@ export default function ManageProducts() {
                 />
             </Space>
 
-            {/* Modal thêm / cập nhật */}
             <ModalCreateProduct
                 isModalOpen={isModalOpenCreate}
                 setIsModalOpen={setIsModalOpenCreate}

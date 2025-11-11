@@ -208,5 +208,27 @@ declare global {
         "completed",
         "cancelled",
     ] as const;
-
+    interface IReviewR {
+        _id: string;
+        user: IUserR;
+        rating: number; // 1–5 sao
+        comment: string;
+        images: string[];
+        replies: IReviewReplyR[];
+        isDeleted: boolean;
+        createdAt: string;
+        updatedAt: string;
+    }
+    interface IReviewReplyR {
+        user: IUserR;
+        comment: string;
+        isDeleted: boolean;
+        createdAt: string;
+        updatedAt: string;
+    }
+    interface ISellerReviewsGrouped {
+        _id: string;
+        product: IProductR;
+        reviews: IReviewR[];
+    }
 }
