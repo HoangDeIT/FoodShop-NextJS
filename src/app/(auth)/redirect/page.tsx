@@ -9,9 +9,9 @@ const RedirectPage = async () => {
     if (session?.access_token) {
         console.log(session)
         if (session.role === "admin") {
-            redirect("/admin");
+            redirect("/admin/dashboard");
         } else if (session.role === "seller") {
-            redirect("/seller");
+            redirect("/seller/dashboard");
         } else {
             await signOut({ callbackUrl: "/login", redirect: true });
             redirect("/login")

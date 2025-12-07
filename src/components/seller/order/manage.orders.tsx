@@ -12,11 +12,13 @@ import {
     Select,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-
+import MapModal from "@/components/seller/order/map.orders";
+import { EnvironmentOutlined } from "@ant-design/icons";
 // ⚠️ Giả API (bạn thay bằng API thật sau)
 import { getOrdersBySeller, updateOrderStatus } from "@/utils/actions/sellers/action.orders";
 import useApp from "antd/es/app/useApp";
 import { getSession, useSession } from "next-auth/react";
+import OrderItemsModal from "./order.item.modal";
 
 interface IMeta {
     current: number;
@@ -31,24 +33,6 @@ interface IOrderItem {
     totalPrice: number;
 }
 
-interface IOrder {
-    _id: string;
-    customer?: { name: string; email: string };
-    shop?: { name: string };
-    items: IOrderItem[];
-    totalPrice: number;
-    orderStatus:
-    | "pending"
-    | "confirmed"
-    | "preparing"
-    | "delivering"
-    | "completed"
-    | "cancelled";
-    receiverName: string;
-    receiverPhone: string;
-    note: string;
-    orderDate: string;
-}
 
 // 🔹 Các trạng thái hợp lệ
 const ORDER_STATUSES = [
@@ -77,12 +61,22 @@ export default function ManageOrders() {
     const [pageSize, setPageSize] = useState<number>(10);
     const [statusFilter, setStatusFilter] = useState<string>("all");
     const [searchName, setSearchName] = useState<string>("");
+    const [mapVisible, setMapVisible] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+    const [itemsModalVisible, setItemsModalVisible] = useState(false);
+
+    const [selectedLocation, setSelectedLocation] = useState({
+        lat: 0,
+        lng: 0,
+        address: "",
+    });
+
     const { message } = useApp();
     const { data } = useSession();
     // 🔹 Lấy dữ liệu đơn hàng
     const getData = async () => {
         const query: any = { current, pageSize };
-        if (statusFilter !== "all") query.orderStatus = statusFilter;
+        if (statusFilter !== "all") query.status = statusFilter;
         if (searchName) query.receiverName = `/${searchName}/i`;
 
         const res = await getOrdersBySeller(query);
@@ -148,6 +142,17 @@ export default function ManageOrders() {
             message.error("Lỗi kết nối server!");
         }
     };
+    const handleOpenMap = (order: IOrder) => {
+        if (!order.deliveryAddress) return;
+
+        setSelectedLocation({
+            lat: order.deliveryAddress.latitude,
+            lng: order.deliveryAddress.longitude,
+            address: order.deliveryAddress.address ?? "Không có địa chỉ",
+        });
+
+        setMapVisible(true);
+    };
 
     // 🔹 Gắn màu trạng thái
     const statusColor = (status: string) => {
@@ -212,6 +217,35 @@ export default function ManageOrders() {
             key: "orderDate",
             render: (d) => new Date(d).toLocaleString("vi-VN"),
         },
+        {
+            title: "Location",
+            key: "location",
+            render: (_, order) =>
+                order.deliveryAddress ? (
+                    <Button
+                        type="link"
+                        onClick={() => handleOpenMap(order)}
+                        icon={<EnvironmentOutlined />}
+                    >
+                        Xem địa điểm
+                    </Button>
+                ) : (
+                    <i>Không có</i>
+                ),
+        },
+        {
+            title: "Details",
+            key: "details",
+            render: (_, record) => (
+                <Button type="link" onClick={() => {
+                    setSelectedOrder(record);
+                    setItemsModalVisible(true);
+                }}>
+                    Xem món ăn
+                </Button>
+            ),
+        },
+
         {
             title: "Action",
             key: "action",
@@ -285,7 +319,18 @@ export default function ManageOrders() {
                     bordered
                 />
             </Space>
-            <Button onClick={() => message.info("🧾 Bạn có đơn hàng mới!")}>ádjasd</Button>
+            <MapModal
+                open={mapVisible}
+                location={selectedLocation}
+                onClose={() => setMapVisible(false)}
+            />
+            <OrderItemsModal
+                open={itemsModalVisible}
+                order={selectedOrder}
+                onClose={() => setItemsModalVisible(false)}
+            />
+
         </Card>
+
     );
 }

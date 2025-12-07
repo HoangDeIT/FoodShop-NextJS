@@ -39,6 +39,7 @@ declare global {
         deletedAt: string | null;
         createdAt: string;
         updatedAt: string;
+        isOpen: boolean;
         __v: number;
         OTP?: string;
         OTPExpired?: string;
@@ -178,8 +179,10 @@ declare global {
         productName: string;
         quantity: number;
         totalPrice: number;
+        toppingNames: string[];
+        sizeName?: string;
+        image?: string;
     }
-
     interface IOrder {
         _id: string;
         customer?: { name: string; email: string };
@@ -197,6 +200,14 @@ declare global {
         receiverPhone: string;
         note: string;
         orderDate: string;
+
+        /**  Địa chỉ giao hàng (có thể null nếu chưa set) */
+        deliveryAddress?: {
+            address?: string;
+            latitude: number;
+            longitude: number;
+            coordinates?: number[]; // optional vì đôi khi không cần show
+        };
     }
 
     // 🔹 Các trạng thái hợp lệ
@@ -230,5 +241,46 @@ declare global {
         _id: string;
         product: IProductR;
         reviews: IReviewR[];
+    }
+
+    ///
+    interface IRevenueByMonth {
+        month: string; // "Jan", "Feb", ...
+        revenue: number;
+    }
+
+    interface IUserRegisterByMonth {
+        month: string;
+        customers: number;
+        sellers: number;
+    }
+
+    interface IAdminDashboard {
+        totalSellers: number;
+        totalCustomers: number;
+        totalSuccessOrders: number;
+        revenueMonth: number;
+        revenueByMonth: IRevenueByMonth[];
+        userRegisterByMonth: IUserRegisterByMonth[];
+    }
+
+    // ======================
+    // 📊 DASHBOARD SELLER
+    // ======================
+    interface ISellerChartPoint {
+        day: string; // "1", "2", ...
+        revenue?: number;
+        orders?: number;
+    }
+
+    interface ISellerDashboard {
+        totalProducts: number;
+        totalApprovedOrders: number;
+        totalPendingOrders: number;
+        revenueThisMonth: number;
+        revenueData: ISellerChartPoint[];
+        ordersData: ISellerChartPoint[];
+        avgRating: number;
+        favorites: number;
     }
 }

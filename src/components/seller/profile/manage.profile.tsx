@@ -10,6 +10,7 @@ import {
 
     Space,
     Tabs,
+    Switch,
 } from "antd";
 import {
     UploadOutlined,
@@ -29,16 +30,10 @@ import useApp from "antd/es/app/useApp";
 
 const SellerShopProfile: React.FC = () => {
     const [form] = Form.useForm();
+    const isOpen = Form.useWatch("isOpen", form);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [method, setMethod] = useState("auto");
     const { message } = useApp();
-    const initProfile = async () => {
-        const res = await getProfile();
-
-    }
-    useEffect(() => {
-        initProfile();
-    }, [])
     // location state
     const [address, setAddress] = useState("");
     const [lat, setLat] = useState<number | null>(null);
@@ -69,9 +64,11 @@ const SellerShopProfile: React.FC = () => {
             if (res?.data) {
                 const data = res.data;
                 form.setFieldsValue({
-                    name: data.name,
-                    description: data.description,
+                    name: data.name ?? "",
+                    description: data.description ?? "",
+                    isOpen: Boolean(data.isOpen),
                 });
+
 
                 if (data.avatar) {
                     setImageUrl(`${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${data.avatar}`);
@@ -119,6 +116,7 @@ const SellerShopProfile: React.FC = () => {
                 name: values.name,
                 description: values.description,
                 avatar,
+                isOpen: values.isOpen,    // 👈 thêm dòng này
                 location: {
                     latitude: lat,
                     longitude: lng,
@@ -154,8 +152,21 @@ const SellerShopProfile: React.FC = () => {
                 initialValues={{
                     name: "",
                     description: "",
+                    isOpen: false,
                 }}
             >
+                <Form.Item
+                    label="Trạng thái hoạt động"
+                    name="isOpen"
+                    valuePropName="checked"
+                >
+                    <Space>
+                        <Switch checkedChildren="Mở" unCheckedChildren="Đóng" checked={isOpen} onChange={(checked) => form.setFieldsValue({ isOpen: checked })} />
+                        {isOpen ? "🟢 Đang mở cửa" : "🔴 Đang đóng cửa"}
+                    </Space>
+                </Form.Item>
+
+
                 {/* --- THÔNG TIN CƠ BẢN --- */}
                 <Form.Item
                     label="Tên quán"

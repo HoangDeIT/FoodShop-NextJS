@@ -17,6 +17,7 @@ import {
     getProductsBySeller,
     deleteProduct,
     toggleActiveProduct,
+    getSellerCategories,
 } from "@/utils/actions/sellers/action.products";
 import useApp from "antd/es/app/useApp";
 import ModalCreateProduct from "./modal.create.products";
@@ -52,9 +53,13 @@ export default function ManageProductsClient({
         if (categoryId !== "all") query.category = categoryId;
 
         const res = await getProductsBySeller(query);
+        const res1 = await getSellerCategories();
         if (res?.data) {
             setProducts(res.data.result ?? []);
             setMeta(res.data.meta);
+        }
+        if (res1?.data) {
+            setCategories(res1.data);
         }
     };
 
@@ -105,10 +110,16 @@ export default function ManageProductsClient({
             title: "Category",
             dataIndex: ["category", "name"],
             key: "category",
-            render: (_, record) =>
-                typeof record.category === "object"
-                    ? record.category.name
-                    : record.category,
+            render: (_, record) => {
+                if (typeof record.category === "object" && record.category?.name) {
+                    return record.category.name;
+                }
+
+                // map từ ID sang tên category
+                const found = categories.find((c) => c._id === record.category);
+                return found ? found.name : <Tag color="red">Unknown</Tag>;
+            }
+
         },
         { title: "Base Price", dataIndex: "basePrice", key: "basePrice" },
         {

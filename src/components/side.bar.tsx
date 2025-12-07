@@ -12,6 +12,8 @@ import {
     MessageOutlined,
     WechatOutlined,
     WechatWorkOutlined,
+    ThunderboltOutlined,
+    UserOutlined,
 } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -43,7 +45,7 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
                 background: token.colorBgContainer,
                 borderRight: `1px solid ${token.colorBorderSecondary}`,
                 overflow: "auto",
-                height: "100vh",
+                minHeight: "100vh",
                 position: "sticky",
                 top: 0,
             }}
@@ -87,15 +89,16 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
                         { key: "dashboard", icon: <BarChartOutlined />, label: "Dashboard" },
                         { key: "users", icon: <TeamOutlined />, label: "Users" },
                         { key: "categories", icon: <AppstoreOutlined />, label: "Categories" },
+                        { key: "system", icon: <ThunderboltOutlined />, label: "System" },
                     ] :
                         [
                             { key: "section-overview", type: "group", label: "Overview" },
+                            { key: "profile", icon: <UserOutlined />, label: "Profile" },
                             { key: "dashboard", icon: <BarChartOutlined />, label: "Dashboard" },
                             { key: "products", icon: <ProductOutlined />, label: "Products" },
                             { key: "reviews", icon: <ShoppingCartOutlined />, label: "Reviews" },
                             { key: "orders", icon: <WechatWorkOutlined />, label: "Orders", extra: <Badge count={8} /> },
                             { key: "chat", icon: <WechatOutlined />, label: "Customers" },
-
 
                         ]}
             />
