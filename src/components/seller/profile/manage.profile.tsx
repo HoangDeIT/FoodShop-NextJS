@@ -7,7 +7,6 @@ import {
     Button,
     Upload,
     Card,
-
     Space,
     Tabs,
     Switch,
@@ -25,6 +24,7 @@ import SearchAddress from "./search.address";
 import { getProfile, updateProfile } from "@/utils/actions/sellers/action.profile";
 import { uploadFile } from "@/utils/actions/admin/action.users";
 import useApp from "antd/es/app/useApp";
+
 
 
 
@@ -58,26 +58,37 @@ const SellerShopProfile: React.FC = () => {
     };
     const fetchSeller = async () => {
         setLoading(true);
+
         try {
             const res = await getProfile();
             console.log("check res: ", res);
+
             if (res?.data) {
-                const data = res.data;
+                const user = res.data.user;
+                const profile = res.data.profile;
+
                 form.setFieldsValue({
-                    name: data.name ?? "",
-                    description: data.description ?? "",
-                    isOpen: Boolean(data.isOpen),
+                    name: user?.name ?? "",
+                    description:
+                        profile && profile.type === "seller"
+                            ? profile.description ?? ""
+                            : "",
+                    isOpen:
+                        profile && profile.type === "seller"
+                            ? Boolean(profile.isOpen)
+                            : false,
                 });
 
-
-                if (data.avatar) {
-                    setImageUrl(`${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${data.avatar}`);
+                if (user?.avatar) {
+                    setImageUrl(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${user.avatar}`
+                    );
                 }
 
-                if (data.location) {
-                    setAddress(data.location.address ?? "");
-                    setLat(data.location.latitude ?? "");
-                    setLng(data.location.longitude ?? "");
+                if (profile?.location) {
+                    setAddress(profile.location.address ?? "");
+                    setLat(profile.location.latitude ?? "");
+                    setLng(profile.location.longitude ?? "");
                 }
             }
         } catch (err) {

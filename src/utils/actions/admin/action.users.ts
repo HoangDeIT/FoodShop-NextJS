@@ -6,7 +6,7 @@ import { sendRequest } from "../../api";
 
 export const getUsers = async (query: any) => {
     const session = await getServerSession(authOptions);
-    const res = await sendRequest<IBackendRes<IModelPaginate<IUserR>>>({
+    const res = await sendRequest<IBackendRes<IModelPaginate<IUser>>>({
         method: "GET",
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
         headers: { Authorization: `Bearer ${session?.access_token}`, },

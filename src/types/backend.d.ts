@@ -29,6 +29,11 @@ declare global {
         total: number;
     }
     interface IUserR {
+        user: IUser;
+        profile: IUserProfile;
+    }
+    type IUserProfile = ISellerProfile | ICustomerProfile | null;
+    interface IUser {
         avatar?: string;
         _id: string;
         name: string;
@@ -44,8 +49,51 @@ declare global {
         OTP?: string;
         OTPExpired?: string;
         status: "active" | "inactive";
-        location?: ILocation,
-        description?: string
+    }
+    export interface ICustomerProfile {
+        type: "customer";
+
+        _id: string;
+        userId: string;
+
+        location?: ILocation;
+
+        expoToken?: string;
+        isOnline: boolean;
+
+        lastActive?: string;
+
+        createdAt: string;
+        updatedAt: string;
+    }
+    export interface ISellerProfile {
+        type: "seller";
+
+        _id: string;
+        userId: string;
+
+        shopName: string;
+        description?: string;
+
+        location?: ILocation;
+
+        isOpen: boolean;
+        isOnline: boolean;
+
+        lastActive?: string;
+
+        createdBy?: {
+            _id: string;
+            email: string;
+        };
+
+        updatedBy?: {
+            _id: string;
+            email: string;
+        };
+
+        createdAt: string;
+        updatedAt: string;
     }
     interface ILocation {
         latitude: number;

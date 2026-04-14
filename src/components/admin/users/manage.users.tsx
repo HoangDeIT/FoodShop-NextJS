@@ -26,7 +26,7 @@ import useApp from "antd/es/app/useApp";
 
 
 export default function ManageUsers() {
-    const [users, setUsers] = useState<IUserR[]>();
+    const [users, setUsers] = useState<IUser[]>();
     const { message } = useApp();
 
     // Modal state
@@ -95,7 +95,7 @@ export default function ManageUsers() {
     };
 
 
-    const columns: ColumnsType<IUserR> = [
+    const columns: ColumnsType<IUser> = [
         {
             title: "Avatar",
             dataIndex: "avatar",
@@ -202,7 +202,7 @@ export default function ManageUsers() {
                 </Space>
 
                 {/* Table */}
-                <Table<IUserR>
+                <Table<IUser>
                     columns={columns}
                     dataSource={users ?? []}
                     pagination={{

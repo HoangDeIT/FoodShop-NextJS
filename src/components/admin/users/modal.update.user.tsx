@@ -24,16 +24,17 @@ const ModalUpdateUser = ({ isModalOpen, setIsModalOpen, userId, getData }: Modal
                 const res = await getUserById(userId);
                 console.log("check res: ", res);
                 if (res?.data) {
+                    const resUser = res.data.user
                     form.setFieldsValue({
-                        name: res.data.name,
-                        email: res.data.email,
-                        role: res.data.role,
-                        status: res.data.status,
+                        name: resUser.name,
+                        email: resUser.email,
+                        role: resUser.role,
+                        status: resUser.status,
                         password: "", // không show password cũ
                     });
-                    if (res.data.avatar) {
+                    if (resUser.avatar) {
                         setAvatarUrl(
-                            `${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${res.data.avatar}`
+                            `${process.env.NEXT_PUBLIC_BACKEND_URL}/public/images/users/${resUser.avatar}`
                         );
                     }
                 }
